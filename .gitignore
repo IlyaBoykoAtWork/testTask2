@@ -1,0 +1,9 @@
+# Dependencies
+node_modules
+*.lock
+
+# Environment
+.env
+
+# Nest.js
+dist
