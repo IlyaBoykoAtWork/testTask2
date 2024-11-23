@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing"
 import { AppController } from "./app.controller"
 import { AppService } from "./app.service"
+import { getConnection } from "./db/open"
 
 describe("AppController", () => {
 	let appController: AppController
@@ -14,9 +15,23 @@ describe("AppController", () => {
 		appController = app.get<AppController>(AppController)
 	})
 
-	describe("root", () => {
-		it('should return "Hello World!"', () => {
-			expect(appController.getHello()).toBe("Hello World!")
+	describe("problems", () => {
+		it("should return a non-negative number", () => {
+			expect(
+				appController.patchProblems(),
+			).resolves.toBeGreaterThanOrEqual(0)
+		})
+
+		it("should return 0", () => {
+			expect(appController.patchProblems()).resolves.toBe(0)
+		})
+
+		it("should be equal to amount of problems", async () => {
+			const db = await getConnection()
+			const { changes } = await db.run(
+				"UPDATE user SET problems=TRUE WHERE id<100",
+			)
+			expect(await appController.patchProblems()).toBe(changes)
 		})
 	})
 })

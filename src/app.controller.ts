@@ -1,12 +1,16 @@
-import { Controller, Get } from "@nestjs/common"
+import { Controller, Patch } from "@nestjs/common"
 import { AppService } from "./app.service"
 
 @Controller()
 export class AppController {
 	constructor(private readonly appService: AppService) {}
 
-	@Get()
-	getHello(): string {
-		return "Temporary placeholder"
+	@Patch("problems")
+	async patchProblems(): Promise<number> {
+		const db = await this.appService.getDB()
+		const { changes } = await db.run(
+			"UPDATE user SET problems = FALSE WHERE problems = TRUE",
+		)
+		return changes ?? 0
 	}
 }
